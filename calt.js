@@ -1,11 +1,20 @@
-AgencyCol= new Meteor.Collection("agencycol");
+agency= new Meteor.Collection("agency");
+stops= new Meteor.Collection("stops");
+routes= new Meteor.Collection("routes");
+trips= new Meteor.Collection("trips");
+stop_times= new Meteor.Collection("stop_times");
+calendar= new Meteor.Collection("calendar");
+calendar_dates= new Meteor.Collection("calendar_dates");
+fare_attributes= new Meteor.Collection("fare_attributes");
+fare_rules= new Meteor.Collection("fare_rules");
+shapes= new Meteor.Collection("shapes");
 if (Meteor.isClient) {
   // counter starts at 0
    
 
   Template.datab.helpers({
     'printdb':function(){
-    var x= AgencyCol.find().fetch();
+    var x= agency.find().fetch();
     
     /*console.log(x[0][0]["agency_url"]);*/
     /*using this kind of return inroder to make sure data is available 
@@ -28,17 +37,45 @@ base = base.split('.meteor')[0];
   if (err) throw err;
   var zip = new JSZip();
   zip.load(data);
-  
-  var json=CSV2JSON(zip.files["agency.txt"].asText());
-var jsonobj = JSON.parse(json);
+  var files= file_list(zip.files);
+  var i=0;
+  for(i=0;i<files.length;i++){
+  	
+  	var json=CSV2JSON(zip.files[files[i]].asText());
+  	var jsonobj = JSON.parse(json);
+  	 var file_name=files[i].substring(0,(files[i].length-4));
+  	 console.log("found "+files[i]);
+  	 if(eval(file_name).find().count() === 0){
+	    console.log("inserted "+files[i]);
+	    eval(file_name).insert(jsonobj);
+	 		}
 
-if(AgencyCol.find().count() === 0){
+  	//  switch(files[i]){
+  	//  	case "agency.txt":
+	  // 	 	if(agency.find().count() === 0){
+	    
+	  //   agency.insert(jsonobj);
+	 	// 	}
+	 	// 	break;
+	 	// case "stops.txt":
+	 	// if(stops.find().count() === 0){
+	    
+	  //   stops.insert(jsonobj);
+	 	// 	}
+	 	// 	break;
+
+
+  	//  }
+  }
+
+ 
+ 
+
+
+
+if(agency.find().count() === 0){
     
-    
-    
-    
-    
-    AgencyCol.insert(jsonobj);
+    agency.insert(jsonobj);
  }
     /*for(ag in ags){
       console.log(ags[ah]);*/
@@ -51,6 +88,22 @@ if(AgencyCol.find().count() === 0){
 
   });
   
+}
+
+file_list = function(obj) {
+    var size = 0, key;
+    var files_array=[];
+    for (key in obj) {
+    	files_array.push(key);
+    	
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    
+    return files_array;
+};
+get_json = function(filename){
+	  var json=CSV2JSON(zip.files[filename].asText());
+var jsonobj = JSON.parse(json);
 }
 
 //ben nadal csv
@@ -122,7 +175,7 @@ function CSV2JSON(csv) {
     }
     
     var json = JSON.stringify(objArray);
-console.log(json);
+// console.log(json);
     var str = json.replace(/},/g, "},\r\n");
 
     return str;
