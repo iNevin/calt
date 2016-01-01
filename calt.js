@@ -8,13 +8,15 @@ calendar_dates= new Meteor.Collection("calendar_dates");
 fare_attributes= new Meteor.Collection("fare_attributes");
 fare_rules= new Meteor.Collection("fare_rules");
 shapes= new Meteor.Collection("shapes");
+frequencies= new Meteor.Collection("frequencies");
 if (Meteor.isClient) {
   // counter starts at 0
    
 
   Template.datab.helpers({
     'printdb':function(){
-    var x= agency.find().fetch();
+    var x= stops.find().fetch();
+    console.log(x[0][0]);
     
     /*console.log(x[0][0]["agency_url"]);*/
     /*using this kind of return inroder to make sure data is available 
@@ -33,7 +35,7 @@ if (Meteor.isServer) {
     var path = Npm.require('path');
   var base = path.resolve('.');
 base = base.split('.meteor')[0];
-    Npm.require("fs").readFile( base+"caldata.zip", Meteor.bindEnvironment( function (err, data) {
+    Npm.require("fs").readFile( base+"sample-feed.zip", Meteor.bindEnvironment( function (err, data) {
   if (err) throw err;
   var zip = new JSZip();
   zip.load(data);
