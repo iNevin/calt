@@ -1,0 +1,20 @@
+<head>
+  <title>calt</title>
+</head>
+
+<body>
+  <h1>CalT!</h1>
+
+  {{> datab}}
+</body>
+
+<template name="datab">
+  
+  <p>Just testing the database</p>
+{{#each arrayify printdb}}
+   <div title="hover here {{name}}">{{name}}&nbsp;&nbsp;{{value}}</div>
+{{/each}}
+</template>
+<template name="print">
+
+</template>
