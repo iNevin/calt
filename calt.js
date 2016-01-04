@@ -10,22 +10,31 @@ fare_rules= new Meteor.Collection("fare_rules");
 shapes= new Meteor.Collection("shapes");
 frequencies= new Meteor.Collection("frequencies");
 temp=new Meteor.Collection("temp");
+display=new Meteor.Collection("display");
+
+var data;
 if (Meteor.isClient) {
   // counter starts at 0
    
 
   Template.datab.helpers({
     'printdb':function(){
-    var x= stop_times.find().fetch();
-    console.log(get_json_size(x));
-    for(var i=0;i<(get_json_size(x));i++) {// subtracting 1 because there are 2 extra objects for Collections, hence no need for the last two
-    	// if(get_stop_name(stop_times.find().fetch()[i].stop_id).stop_name){
-    		
-    	console.log(i+" "+"Stop id is : "+stop_times.find().fetch()[i].stop_id+ " Stop Name is "+get_stop_name(stop_times.find().fetch()[i].stop_id).stop_name);
-    // }
     	
-    	// console.log(i);
-    }
+
+    var x=stops.find().fetch();
+    
+    
+    	console.log(stops.find().fetch().length);
+    
+    
+    // for(var i=0;i<(get_json_size(x));i++) {
+    // 	// if(get_stop_name(stop_times.find().fetch()[i].stop_id).stop_name){
+    		
+    // 	console.log(i+" "+"Stop id is : "+stop_times.find().fetch()[i].stop_id+ " Stop Name is "+get_stop_name(stop_times.find().fetch()[i].stop_id).stop_name);
+    // // }
+    	
+    // 	// console.log(i);
+    // }
     // console.log(get_stop_name("NANAA"));
     
     // console.log(sup());
@@ -36,6 +45,35 @@ if (Meteor.isClient) {
   
 
   },
+  'print':function(){
+  	return (stop_times.find().fetch().length);
+  },
+  'disp':function(){
+  	return display.find().fetch();
+  }
+  });
+  Template.datab.events({
+  	
+  	"submit .input-data":function(event){
+
+  		event.preventDefault();
+  		var x= get_stop_id(event.target.input.value).stop_id;
+  		data = get_stop_data(x);
+  		Meteor.call('clear_display');
+  		// if((display.find().fetch().length)===0){
+  		for(var i=0;i<data.length;i++){
+  		display.insert(data[i]);
+  	// }
+  }
+  		
+  		event.target.input.value="";
+  	}
+  });
+  Template.printer.helpers({
+  	'printing':function(){
+  	return display.find().fetch();
+  }
+
   });
 
   
@@ -45,6 +83,17 @@ get_stop_name= function(stop_id){
 {"stop_id":stop_id}
 );
 }
+get_stop_id= function(stop_name){
+	return stops.findOne(
+{"stop_name":stop_name}
+);
+}
+get_stop_data= function(stop_id){
+	return stop_times.find(
+{"stop_id":stop_id}
+).fetch();
+}
+
 get_json_size = function(obj) {
     var size = 0, key;
     
@@ -60,12 +109,13 @@ if (Meteor.isServer) {
     var path = Npm.require('path');
   var base = path.resolve('.');
 base = base.split('.meteor')[0];
-    Npm.require("fs").readFile( base+"sample-feed.zip", Meteor.bindEnvironment( function (err, data) {
+    Npm.require("fs").readFile( base+"caldata.zip", Meteor.bindEnvironment( function (err, data) {
   if (err) throw err;
   var zip = new JSZip();
   zip.load(data);
   var files= file_list(zip.files);
   var i=0;
+  // display.remove({});
   for(i=0;i<files.length;i++){
   	
   	var json=CSV2JSON(zip.files[files[i]].asText());
@@ -83,6 +133,8 @@ base = base.split('.meteor')[0];
 	    eval(file_name).insert(temp.find().fetch()[0][j]);
 	}
 	temp.remove({});
+
+
 	 		}
 
   	//  switch(files[i]){
@@ -257,6 +309,12 @@ UI.registerHelper("arrayify", function(obj){
         result.push({name:key,value:obj[key]});
     }
     return result;
+});
+
+Meteor.methods({
+  clear_display: function () {
+display.remove({});
+  }
 });
 /*
   Handlebars.registerHelper('arrayify',function(obj){

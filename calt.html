@@ -6,15 +6,27 @@
   <h1>CalT</h1>
 
   {{> datab}}
+  {{>printer}}
 </body>
 
 <template name="datab">
   
   <p>Just testing the database</p>
-{{#each arrayify printdb}}
-   <div title="hover here {{name}}">{{name}}&nbsp;&nbsp;{{value}}</div>
-{{/each}}
-</template>
-<template name="print">
+  {{print}}
+    <form class="input-data">
+        <input type="text" name="input" placeholder="Enter place" />
+        <input type="submit" name="but" placeholder="Enter"/>
+      </form>
 
+<!-- {{#each arrayify printdb}}
+   <div title="hover here {{name}}">{{name}}&nbsp;&nbsp;{{value}}</div>
+{{/each}} -->
+
+</template>
+<template name="printer">
+Arrival
+
+{{#each printing}}
+{{arrival_time}}
+{{/each}}
 </template>
