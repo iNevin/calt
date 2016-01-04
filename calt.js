@@ -88,11 +88,31 @@ get_stop_id= function(stop_name){
 {"stop_name":stop_name}
 );
 }
-get_stop_data= function(stop_id){
-	return stop_times.find(
-{"stop_id":stop_id}
-).fetch();
+get_stop_data= function(stop_id,trip_id){
+ return stop_times.find({ "$and": [
+    {"stop_id":stop_id},
+    { "trip_id":trip_id}
+]}).fetch();
 }
+get_service_id= function(date){
+	var key = date;
+	var value = "1";
+	var selector = {};
+selector[key] = value;
+	var matched_objs= calendar.find(selector).fetch();
+	var result=[];
+	for( var x in matched_objs){
+		result.push(matched_objs[x].service_id);
+	}
+	return result;
+}
+get_trip_id=function(service_id){
+	return trips.find(
+{"service_id":service_id}
+).fetch();
+
+}
+
 
 get_json_size = function(obj) {
     var size = 0, key;
