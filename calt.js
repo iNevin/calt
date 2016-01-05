@@ -57,12 +57,31 @@ if (Meteor.isClient) {
   	"submit .input-data":function(event){
 
   		event.preventDefault();
-  		var x= get_stop_id(event.target.input.value).stop_id;
-  		data = get_stop_data(x);
+  		var stop_id= get_stop_id(event.target.input_place.value).stop_id;
+  		// stop_id++;
+  		console.log(stop_id);
+  		var date=event.target.input_date.value;
+  		var service_id=get_service_id(date.toLowerCase());
+  		
+  		var trip_id=get_trip_id(service_id[0]);
+  		
+  		var result=[];
+  		
+  		for(var x in trip_id){
+  			
+  			data = get_stop_data(stop_id,trip_id[x]);
+console.log(trip_id[x]);
+if(data[0]){
+  			result.push(data[0]);
+  		}
+  			
+  		}
+
+  		;
   		Meteor.call('clear_display');
   		// if((display.find().fetch().length)===0){
-  		for(var i=0;i<data.length;i++){
-  		display.insert(data[i]);
+  		for(var i=0;i<result.length;i++){
+  		display.insert(result[i]);
   	// }
   }
   		
@@ -71,7 +90,7 @@ if (Meteor.isClient) {
   });
   Template.printer.helpers({
   	'printing':function(){
-  	return display.find().fetch();
+  	return display.find({}, {sort: {  arrival_time: 1 }}).fetch()
   }
 
   });
@@ -107,9 +126,18 @@ selector[key] = value;
 	return result;
 }
 get_trip_id=function(service_id){
-	return trips.find(
-{"service_id":service_id}
+	var matched_objs = trips.find({ "$and": [
+{"service_id":service_id},
+{"direction_id":"0"}
+]}
 ).fetch();
+	var result=[];
+	for( var x in matched_objs){
+		result.push(matched_objs[x].trip_id);
+	}
+
+	return result;
+
 
 }
 
