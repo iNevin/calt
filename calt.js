@@ -13,6 +13,7 @@ temp=new Meteor.Collection("temp");
 display=new Meteor.Collection("display");
 
 var data;
+var dir="0";//direction- use 1 for south bound, 0 for nb
 if (Meteor.isClient) {
   // counter starts at 0
    
@@ -57,7 +58,7 @@ if (Meteor.isClient) {
   	"submit .input-data":function(event){
 
   		event.preventDefault();
-  		var stop_id= get_stop_id(event.target.input_place.value).stop_id;
+  		var stop_id= get_stop_id(event.target.input_place.value);
   		// stop_id++;
   		console.log(stop_id);
   		var date=event.target.input_date.value;
@@ -69,7 +70,7 @@ if (Meteor.isClient) {
   		
   		for(var x in trip_id){
   			
-  			data = get_stop_data(stop_id,trip_id[x]);
+  			data = get_stop_data(stop_id[dir].stop_id,trip_id[x]);
 console.log(trip_id[x]);
 if(data[0]){
   			result.push(data[0]);
@@ -103,9 +104,9 @@ get_stop_name= function(stop_id){
 );
 }
 get_stop_id= function(stop_name){
-	return stops.findOne(
+	return stops.find(
 {"stop_name":stop_name}
-);
+).fetch();
 }
 get_stop_data= function(stop_id,trip_id){
  return stop_times.find({ "$and": [
@@ -128,7 +129,7 @@ selector[key] = value;
 get_trip_id=function(service_id){
 	var matched_objs = trips.find({ "$and": [
 {"service_id":service_id},
-{"direction_id":"0"}
+{"direction_id":dir}
 ]}
 ).fetch();
 	var result=[];
