@@ -13,7 +13,7 @@ temp=new Meteor.Collection("temp");
 display=new Meteor.Collection("display");
 
 var data;
-var dir="0";//direction- use 1 for south bound, 0 for nb
+var dir="1";//direction- use 1 for south bound, 0 for nb
 if (Meteor.isClient) {
   // counter starts at 0
    
@@ -58,6 +58,7 @@ if (Meteor.isClient) {
   	"submit .input-data":function(event){
 
   		event.preventDefault();
+  		dir=""+event.target.dir.value;
   		var stop_id= get_stop_id(event.target.input_place.value);
   		// stop_id++;
   		console.log(stop_id);
