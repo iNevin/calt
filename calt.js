@@ -102,7 +102,8 @@ if(data[0]){
 }
 get_time= function(){
 	
-	console.log(today.getMinutes());
+	
+console.log(moment(display.findOne().arrival_time,"hh:mm:ss").fromNow());   
 }
 get_stop_name= function(stop_id){
 	return stops.findOne(
