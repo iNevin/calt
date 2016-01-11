@@ -11,7 +11,7 @@ shapes= new Meteor.Collection("shapes");
 frequencies= new Meteor.Collection("frequencies");
 temp=new Meteor.Collection("temp");
 display=new Meteor.Collection("display");
-
+var today = new Date();
 var data;
 var dir="1";//direction- use 1 for south bound, 0 for nb
 if (Meteor.isClient) {
@@ -58,6 +58,7 @@ if (Meteor.isClient) {
   	"submit .input-data":function(event){
 
   		event.preventDefault();
+  		get_time();
   		dir=""+event.target.dir.value;
   		var stop_id= get_stop_id(event.target.input_place.value);
   		// stop_id++;
@@ -98,6 +99,10 @@ if(data[0]){
   });
 
   
+}
+get_time= function(){
+	
+	console.log(today.getMinutes());
 }
 get_stop_name= function(stop_id){
 	return stops.findOne(
