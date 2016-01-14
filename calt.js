@@ -58,7 +58,8 @@ if (Meteor.isClient) {
   	"submit .input-data":function(event){
 
   		event.preventDefault();
-  		get_time();
+  		console.log(get_relative_time(get_time()));
+  		get_location();
   		dir=""+event.target.dir.value;
   		var stop_id= get_stop_id(event.target.input_place.value);
   		// stop_id++;
@@ -73,7 +74,7 @@ if (Meteor.isClient) {
   		for(var x in trip_id){
   			
   			data = get_stop_data(stop_id[dir].stop_id,trip_id[x]);
-console.log(trip_id[x]);
+
 if(data[0]){
   			result.push(data[0]);
   		}
@@ -103,7 +104,56 @@ if(data[0]){
 get_time= function(){
 	
 	
-console.log(moment(display.findOne().arrival_time,"hh:mm:ss").fromNow());   
+var current= moment().format("HH:mm:ss");   
+
+var arrival_array=get_arrivaltime_array(display.find().fetch());
+var latest="";
+for(var x in arrival_array){
+
+		if(current<arrival_array[x]){
+			
+			latest=arrival_array[x]
+			break;
+		}
+	
+
+}
+return latest;
+
+}
+get_location=function(){
+	navigator.geolocation.getCurrentPosition(function(position) {
+		get_gps_station(position.coords.latitude,position.coords.longitude);
+	});
+
+}
+get_gps_station=function(lat,lng){
+reverseGeocode.getLocation(lat, lng, function(location){
+ 
+	//location is straight output from Google
+	//or you can now access it from reverseGeocode object
+	var add=reverseGeocode.getAddrObj();
+	for( var x in add) {
+		if(add[x].type=="locality"){
+			console.log(add[x].longName);
+		}
+
+	}
+});
+}
+get_relative_time= function(time){
+	
+	
+console.log(moment(time,"hh:mm:ss").fromNow());   
+}
+get_arrivaltime_array=function(arrival_json){
+	var arrival_array=[];
+	for(var i in arrival_json ){
+		arrival_array.push(arrival_json[i].arrival_time);
+	}
+	arrival_array.sort();
+	return arrival_array;
+
 }
 get_stop_name= function(stop_id){
 	return stops.findOne(
